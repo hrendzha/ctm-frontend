@@ -1,5 +1,5 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "hooks";
 
 interface IProps {
   children: JSX.Element;
@@ -8,9 +8,9 @@ interface IProps {
 }
 
 function PublicRoute({ children, restricted = false, redirectTo = "/" }: IProps) {
-  // const user = useAuth();
+  const { user } = useAuth();
 
-  const shouldRedirect = true && restricted;
+  const shouldRedirect = user && restricted;
 
   return shouldRedirect ? <Navigate to={redirectTo} /> : children;
 }

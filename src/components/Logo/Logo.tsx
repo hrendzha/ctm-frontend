@@ -3,7 +3,7 @@ import { Link } from "@mui/material";
 import { Box } from "@mui/system";
 
 interface IProps {
-  type: string;
+  type: "pc" | "mobile";
 }
 
 const Logo = ({ type }: IProps) => {

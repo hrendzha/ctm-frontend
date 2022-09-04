@@ -1,21 +1,24 @@
+import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link, Grid, Box, Container } from "@mui/material";
+import { Link, Grid, Box, Container, Typography } from "@mui/material";
 import LockIcon from "@mui/icons-material/LockOutlined";
-import { useLogInMutation } from "services/api";
-import Copyright from "components/Copyright";
-import { signInFormSchema } from "utils/yupSchemata";
-import Section from "components/Section";
-import Wrapper from "components/Wrapper";
-import TitleWithIcon from "components/TitleWithIcon";
-import EmailInputField from "components/EmailInputField";
-import PasswordInputField from "components/PasswordInputField";
-import SubmitFormBtn from "components/SubmitFormBtn";
-import { ICredentials } from "interfaces";
+import { Copyright } from "components/Copyright";
+import { signInFormSchema } from "yup/schemas";
+import { Section } from "components/Section";
+import { Wrapper } from "components/Wrapper";
+import { TitleWithIcon } from "components/TitleWithIcon";
+import { EmailInputField } from "components/EmailInputField";
+import { PasswordInputField } from "components/PasswordInputField";
+import { SubmitFormBtn } from "components/SubmitFormBtn";
+import { ICredentials, IJsonResponse } from "interfaces";
+import { useAuth } from "hooks";
 
 const SignInPage = () => {
-  const [logIn, { isLoading: isLogInLoading }] = useLogInMutation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const auth = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -33,18 +36,36 @@ const SignInPage = () => {
   });
 
   const onSubmit = async (credentials: ICredentials) => {
+    setIsSubmitting(true);
+
     try {
-      await logIn(credentials).unwrap();
-      navigate("/contacts");
+      await auth.signIn(credentials);
+      navigate("/set");
     } catch (error) {
-      const isUserCredentialsIncorrect = error.status === 400 && !error.data;
-      if (isUserCredentialsIncorrect) {
-        setError("incorrectCredentials", {
-          type: "incorrectCredentials",
-        });
+      if (error instanceof AxiosError) {
+        const errorResponse: IJsonResponse<null> = error.response?.data;
+        const isUserCredentialsIncorrect = errorResponse.statusCode === 401;
+        if (isUserCredentialsIncorrect) {
+          setError("password", {
+            type: "incorrectCredentials",
+          });
+        }
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const passwordHelperText =
+    errors.password?.message ||
+    (errors.password?.type === "incorrectCredentials" ? (
+      // TODO take color from MUI color panel
+      <Typography color="#d32f2f" sx={{ display: "block", mt: 1, mb: 1 }} component="span">
+        The email or password you entered is incorrect
+      </Typography>
+    ) : (
+      ""
+    ));
 
   return (
     <Section>
@@ -53,20 +74,25 @@ const SignInPage = () => {
           <TitleWithIcon title="Sign in" icon={LockIcon} />
 
           <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
-            <EmailInputField autoFocus register={register} errors={errors} />
+            <EmailInputField
+              autoFocus
+              helperText={errors.email?.message || ""}
+              shouldShowError={Boolean(errors.email)}
+              {...register("email")}
+            />
 
             <PasswordInputField
               inputId="current-password"
               autoComplete="current-password"
-              register={register}
-              errors={errors}
-              helperTextFor="signInForm"
+              shouldShowError={Boolean(errors.password)}
+              helperText={passwordHelperText}
+              {...register("password")}
             />
 
             <SubmitFormBtn
-              isSubmitting={isLogInLoading}
+              isSubmitting={isSubmitting}
               sx={{
-                mt: errors.incorrectCredentials ? 0 : 3,
+                mt: errors.password?.type === "incorrectCredentials" ? 0 : 3,
                 mb: 3,
               }}
             >
@@ -75,7 +101,7 @@ const SignInPage = () => {
 
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link variant="body2" component={RouterLink} to="/register">
+                <Link variant="body2" component={RouterLink} to="/sign-up">
                   Don't have an account? Sign Up
                 </Link>
               </Grid>

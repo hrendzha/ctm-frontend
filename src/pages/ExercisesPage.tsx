@@ -1,8 +1,11 @@
+import { Container } from "@mui/material";
+import { Section } from "components/Section";
+
 const ExercisesPage = () => {
   return (
-    <>
-      <h1>Exercises Page</h1>
-    </>
+    <Section>
+      <Container maxWidth="lg">qwe</Container>
+    </Section>
   );
 };
 

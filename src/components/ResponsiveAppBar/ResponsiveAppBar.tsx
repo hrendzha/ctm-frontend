@@ -1,9 +1,11 @@
 import { AppBar, Container, Toolbar } from "@mui/material";
 import { MobileNav } from "components/MobileNav";
 import { PcNav } from "components/PcNav";
+import { UserMenu } from "components/UserMenu";
+import { useAuth } from "hooks";
 
 const ResponsiveAppBar = () => {
-  const user = false;
+  const { user } = useAuth();
 
   return (
     <AppBar position="static">
@@ -20,6 +22,8 @@ const ResponsiveAppBar = () => {
           <MobileNav user={user} />
 
           <PcNav user={user} />
+
+          {user && <UserMenu />}
         </Toolbar>
       </Container>
     </AppBar>

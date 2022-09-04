@@ -1,16 +1,14 @@
-import { NavLink } from "react-router-dom";
 import { List, ListItem } from "@mui/material";
 import { Box } from "@mui/system";
 import { Logo } from "components/Logo";
+import { NavLink } from "components/NavLink";
+import { User } from "types";
 
 interface IProps {
-  user: boolean;
+  user: User;
 }
 
 const PcNav = ({ user }: IProps) => {
-  const setActiveNavLink = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "activeNavLinkPc" : undefined;
-
   return (
     <>
       <Logo type="pc" />
@@ -23,35 +21,31 @@ const PcNav = ({ user }: IProps) => {
         }}
         component="nav"
       >
-        <List sx={{ display: "flex", flexGrow: 1 }}>
-          <ListItem>
-            <NavLink to="/" className={setActiveNavLink}>
-              Home
-            </NavLink>
+        <List sx={{ display: "flex", flexGrow: 1 }} role="menubar">
+          <ListItem sx={{ width: "unset" }}>
+            <NavLink to="/">Home</NavLink>
           </ListItem>
           {user && (
-            <ListItem>
-              <NavLink to="/exercises" className={setActiveNavLink}>
-                Contacts
-              </NavLink>
-            </ListItem>
+            <>
+              <ListItem sx={{ width: "unset" }}>
+                <NavLink to="/set">Set</NavLink>
+              </ListItem>
+              <ListItem sx={{ width: "unset" }}>
+                <NavLink to="/study">Study</NavLink>
+              </ListItem>
+            </>
+          )}
+          {!user && (
+            <>
+              <ListItem sx={{ width: "unset", marginLeft: "auto" }}>
+                <NavLink to="/sign-up">Sign up</NavLink>
+              </ListItem>
+              <ListItem sx={{ width: "unset" }}>
+                <NavLink to="/sign-in">Sign in</NavLink>
+              </ListItem>
+            </>
           )}
         </List>
-
-        {!user && (
-          <List sx={{ display: "flex" }}>
-            <ListItem>
-              <NavLink to="/sign-up" className={setActiveNavLink}>
-                Sign up
-              </NavLink>
-            </ListItem>
-            <ListItem>
-              <NavLink to="/sign-in" className={setActiveNavLink}>
-                Sign in
-              </NavLink>
-            </ListItem>
-          </List>
-        )}
       </Box>
     </>
   );

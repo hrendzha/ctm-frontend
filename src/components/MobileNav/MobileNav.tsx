@@ -1,32 +1,51 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import {
+  IconButton,
+  Link as MuiLink,
+  Menu,
+  MenuItem as MuiMenuItem,
+  MenuItemProps,
+} from "@mui/material";
 import { Box } from "@mui/system";
+import { styled } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import { createTheme, ThemeProvider } from "@mui/material";
 import { Logo } from "components/Logo";
+import { User } from "types";
 
-const theme = createTheme({
-  components: {
-    // Name of the component
-    MuiMenuItem: {
-      styleOverrides: {
-        // Name of the slot
-        root: {
-          // Some CSS
-          padding: 0,
-        },
-      },
-    },
-  },
-});
+const MenuItem = styled(MuiMenuItem)<MenuItemProps>(() => ({
+  padding: 0,
+}));
+
+interface ILinkProps {
+  children: React.ReactNode;
+  component: React.ElementType<any>;
+  to: string;
+}
+const Link = ({ children, component, to }: ILinkProps) => {
+  const { pathname } = useLocation();
+  const color = pathname === to ? "primary" : "inherit";
+
+  return (
+    <MuiLink
+      component={component}
+      to={to}
+      underline="none"
+      color={color}
+      sx={{ padding: "6px 16px", width: "100%" }}
+    >
+      {children}
+    </MuiLink>
+  );
+};
 
 interface IProps {
-  user: boolean;
+  user: User;
 }
 
 const MobileNav = ({ user }: IProps) => {
   const [anchorElNav, setAnchorElNav] = useState<null | (EventTarget & HTMLButtonElement)>(null);
+
   const handleOpenNavMenu = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorElNav(e.currentTarget);
   };
@@ -34,11 +53,8 @@ const MobileNav = ({ user }: IProps) => {
     setAnchorElNav(null);
   };
 
-  const setActiveNavLink = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "activeNavLink" : undefined;
-
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Box
         sx={{
           flexGrow: user ? 1 : 0,
@@ -55,8 +71,6 @@ const MobileNav = ({ user }: IProps) => {
         >
           <MenuIcon />
         </IconButton>
-
-        <button onClick={() => null}></button>
 
         <Menu
           id="menu-appbar"
@@ -77,37 +91,44 @@ const MobileNav = ({ user }: IProps) => {
           }}
         >
           <MenuItem onClick={handleCloseNavMenu}>
-            <NavLink to="/" className={setActiveNavLink}>
+            <Link component={RouterLink} to="/">
               Home
-            </NavLink>
+            </Link>
           </MenuItem>
           {user && (
             <MenuItem onClick={handleCloseNavMenu}>
-              <NavLink to="/exercises" className={setActiveNavLink}>
-                Contacts
-              </NavLink>
+              <Link component={RouterLink} to="/set">
+                Set
+              </Link>
+            </MenuItem>
+          )}
+          {user && (
+            <MenuItem onClick={handleCloseNavMenu}>
+              <Link component={RouterLink} to="/study">
+                Study
+              </Link>
             </MenuItem>
           )}
 
           {!user && (
             <MenuItem onClick={handleCloseNavMenu}>
-              <NavLink to="/sign-up" className={setActiveNavLink}>
+              <Link component={RouterLink} to="/sign-up">
                 Sign up
-              </NavLink>
+              </Link>
             </MenuItem>
           )}
           {!user && (
             <MenuItem onClick={handleCloseNavMenu}>
-              <NavLink to="/sign-in" className={setActiveNavLink}>
+              <Link component={RouterLink} to="/sign-in">
                 Sign in
-              </NavLink>
+              </Link>
             </MenuItem>
           )}
         </Menu>
       </Box>
 
       <Logo type="mobile" />
-    </ThemeProvider>
+    </>
   );
 };
 

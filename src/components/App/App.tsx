@@ -1,24 +1,88 @@
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { CssBaseline } from "@mui/material";
-// import { PublicRoute } from "components/PublicRoute";
-import { HomePage, ExercisesPage, SignInPage, SignUpPage } from "pages";
+import { Backdrop, CircularProgress } from "@mui/material";
+import { HomePage, ExercisesPage, SignInPage, SignUpPage, SetPage } from "pages";
 import { Layout } from "components/Layout";
-import { AuthProvider } from "components/AuthProvider";
+import { PublicRoute } from "components/PublicRoute";
+import { PrivateRoute } from "components/PrivateRoute";
+import { useAuth } from "hooks";
 
 const App = () => {
+  const auth = useAuth();
+  const [isFetchCurrentUserLoading, setIsFetchCurrentUserLoading] = useState(true);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      try {
+        setIsFetchCurrentUserLoading(true);
+        await auth.getCurrentUser();
+      } catch (error) {
+      } finally {
+        setIsFetchCurrentUserLoading(false);
+      }
+    };
+
+    getCurrentUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (isFetchCurrentUserLoading) {
+    return (
+      <Backdrop
+        sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }}
+        open={isFetchCurrentUserLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
   return (
-    <AuthProvider>
-      <CssBaseline />
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/exercises" element={<ExercisesPage />} />
-          <Route path="/sign-in" element={<SignInPage />} />
-          <Route path="/sign-up" element={<SignUpPage />} />
-          <Route path="*" element={<h1>Not found</h1>} />
-        </Route>
-      </Routes>
-    </AuthProvider>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <HomePage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/set"
+          element={
+            <PrivateRoute redirectTo="/sign-in">
+              <SetPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/study"
+          element={
+            <PrivateRoute redirectTo="/sign-in">
+              <ExercisesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/sign-in"
+          element={
+            <PublicRoute restricted>
+              <SignInPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            <PublicRoute restricted>
+              <SignUpPage />
+            </PublicRoute>
+          }
+        />
+        <Route path="*" element={<h1>Not found</h1>} />
+      </Route>
+    </Routes>
   );
 };
 

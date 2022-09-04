@@ -11,7 +11,9 @@ const HomePage = () => {
         height: "calc(100vh - 64px)",
       }}
     >
-      <Typography variant="h2">CTM Home Page</Typography>
+      <Typography variant="h2" textAlign="center">
+        CTM Home Page
+      </Typography>
     </Box>
   );
 };
