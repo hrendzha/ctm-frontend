@@ -4,7 +4,9 @@ import { NewTerm, TermForUpdate } from "types";
 import { LsKeys } from "utils";
 import { ChangeLevelActions } from "enums";
 
-axios.defaults.baseURL = "http://localhost:4000/api/";
+// axios.defaults.baseURL = "http://localhost:4000/api/";
+axios.defaults.baseURL = "https://strange-newt-battledress.cyclic.app/api/";
+console.log(`process.env.NODE_ENV`, process.env.NODE_ENV);
 
 const token = {
   set(token: string) {
