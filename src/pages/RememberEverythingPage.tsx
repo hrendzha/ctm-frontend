@@ -78,7 +78,7 @@ const RememberEverythingPage = () => {
   }, []);
 
   const showTerm = !isLoading && terms.length > 0;
-  console.log();
+
   return (
     <Section>
       <Container maxWidth="lg">
