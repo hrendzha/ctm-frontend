@@ -159,6 +159,7 @@ const SetPage = () => {
                       }}
                     >
                       <Typography
+                        whiteSpace={"pre-wrap"}
                         sx={{
                           width: {
                             sm: 130,
@@ -180,7 +181,7 @@ const SetPage = () => {
                           },
                         }}
                       />
-                      <Typography>{definition}</Typography>
+                      <Typography whiteSpace={"pre-wrap"}>{definition}</Typography>
                     </CardContent>
                   </Card>
                 </ListItem>

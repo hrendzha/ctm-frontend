@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { HomePage, ExercisesPage, SignInPage, SignUpPage, SetPage } from "pages";
+import {
+  HomePage,
+  ExercisesPage,
+  SignInPage,
+  SignUpPage,
+  SetPage,
+  RememberEverythingPage,
+} from "pages";
 import { Layout } from "components/Layout";
 import { PublicRoute } from "components/PublicRoute";
 import { PrivateRoute } from "components/PrivateRoute";
@@ -56,14 +63,25 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
-          path="/study"
+          path="/exercises"
           element={
             <PrivateRoute redirectTo="/sign-in">
               <ExercisesPage />
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/remember-everything"
+          element={
+            <PrivateRoute redirectTo="/sign-in">
+              <RememberEverythingPage />
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/sign-in"
           element={

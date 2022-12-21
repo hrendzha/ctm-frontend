@@ -104,7 +104,7 @@ const MobileNav = ({ user }: IProps) => {
           )}
           {user && (
             <MenuItem onClick={handleCloseNavMenu}>
-              <Link component={RouterLink} to="/study">
+              <Link component={RouterLink} to="/exercises">
                 Study
               </Link>
             </MenuItem>

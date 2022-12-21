@@ -2,6 +2,7 @@ import axios from "axios";
 import { ICredentials, IJsonResponse, ISignUpFormData, ITerm, IUser } from "interfaces";
 import { NewTerm, TermForUpdate } from "types";
 import { LsKeys } from "utils";
+import { ChangeLevelActions } from "enums";
 
 axios.defaults.baseURL = "http://localhost:4000/api/";
 
@@ -82,6 +83,19 @@ const api = {
         throw error;
       }
     },
+    getForLearn: async () => {
+      try {
+        interface IData {
+          items: ITerm[];
+        }
+        const { data }: { data: IJsonResponse<IData> } = await axios.get("/terms/for-learn");
+        const terms = data.data.items;
+
+        return terms;
+      } catch (error) {
+        throw error;
+      }
+    },
     create: async (newTerm: NewTerm) => {
       try {
         await axios.post("/terms", newTerm);
@@ -105,6 +119,17 @@ const api = {
         await axios.patch(`/terms/${term._id}`, {
           term: term.term,
           definition: term.definition,
+        });
+
+        return true;
+      } catch (error) {
+        throw error;
+      }
+    },
+    changeLevel: async (_id: string, action: ChangeLevelActions) => {
+      try {
+        await axios.patch(`/terms/${_id}/level`, {
+          action,
         });
 
         return true;

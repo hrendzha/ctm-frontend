@@ -31,7 +31,7 @@ const PcNav = ({ user }: IProps) => {
                 <NavLink to="/set">Set</NavLink>
               </ListItem>
               <ListItem sx={{ width: "unset" }}>
-                <NavLink to="/study">Study</NavLink>
+                <NavLink to="/exercises">Study</NavLink>
               </ListItem>
             </>
           )}
