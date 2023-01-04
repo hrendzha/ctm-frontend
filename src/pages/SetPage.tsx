@@ -1,25 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Container,
-  IconButton,
-  List,
-  ListItem,
-  Tooltip,
-  Typography,
-  Divider,
-  Box,
-  Button,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import { Section } from "components/Section";
 import { api } from "api";
 import { ITerm } from "interfaces";
-import { AddTermDialog } from "components/AddTermDialog";
 import { TermForUpdate } from "types";
+import { AddTermDialog } from "components/AddTermDialog";
+import { AppContainer } from "components/AppContainer";
+import { AppSpeedDial } from "components/AppSpeedDial";
+import { SetList } from "components/SetList";
 
 const defaultTermForUpdate: TermForUpdate = {
   _id: "",
@@ -31,29 +18,39 @@ const SetPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
   const [termForUpdate, setTermForUpdate] = useState(defaultTermForUpdate);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRemoving, setIsRemoving] = useState(false);
+
   const [openDialog, setOpenDialog] = useState(false);
 
   const getTerms = async () => {
     try {
       const terms = await api.terms.get();
       setTerms(terms);
-    } catch (error) {}
-  };
-
-  const onTermRemove = async (_id: string) => {
-    try {
-      setIsRemoving(true);
-      await api.terms.remove(_id);
-      getTerms();
     } catch (error) {
-      console.log(error);
-    } finally {
-      setIsRemoving(false);
+      console.log("catch", error);
     }
   };
 
-  const closeDialog = () => {
+  const onRemoveCallback = (_id: string) => {
+    setTerms(terms => terms.filter(term => term._id !== _id));
+  };
+
+  const onEditCallback = async (updatedTerm: ITerm) => {
+    setTerms(terms => {
+      const idx = terms.findIndex(term => term._id === updatedTerm._id);
+
+      if (idx !== -1) {
+        const copiedTerms = [...terms];
+        copiedTerms.splice(idx, 1, updatedTerm);
+
+        return copiedTerms;
+      }
+
+      return terms;
+    });
+  };
+
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => {
     setTermForUpdate(defaultTermForUpdate);
     setOpenDialog(false);
   };
@@ -64,6 +61,7 @@ const SetPage = () => {
         setIsLoading(true);
         await getTerms();
       } catch (error) {
+        console.log("catch", error);
       } finally {
         setIsLoading(false);
       }
@@ -73,123 +71,29 @@ const SetPage = () => {
   }, []);
 
   return (
-    <Section>
-      <Container maxWidth="lg">
+    <Section pb={7}>
+      <AppSpeedDial onAddTermClick={handleOpenDialog} />
+      <AddTermDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        onSave={() => {
+          handleCloseDialog();
+          getTerms();
+        }}
+        termForUpdate={termForUpdate}
+      />
+
+      <AppContainer>
         {isLoading ? (
           "loading"
         ) : (
-          <>
-            <Box>
-              <Button variant="contained" onClick={() => setOpenDialog(true)}>
-                Add term
-              </Button>
-            </Box>
-            <AddTermDialog
-              open={openDialog}
-              onClose={closeDialog}
-              onSave={() => {
-                closeDialog();
-                getTerms();
-              }}
-              termForUpdate={termForUpdate}
-            />
-
-            <List>
-              {terms.map(({ term, definition, _id }) => (
-                <ListItem key={_id}>
-                  <Card
-                    sx={{
-                      display: {
-                        sm: "flex",
-                      },
-                      flexDirection: {
-                        sm: "row-reverse",
-                      },
-                      width: "100%",
-                    }}
-                  >
-                    <CardActions sx={{ justifyContent: "end" }}>
-                      <Tooltip title="Remove">
-                        <IconButton
-                          aria-label="remove term"
-                          onClick={() => onTermRemove(_id)}
-                          disabled={isRemoving}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Edit">
-                        <IconButton
-                          aria-label="edit term"
-                          size="small"
-                          onClick={() => {
-                            setTermForUpdate({
-                              _id,
-                              term,
-                              definition,
-                            });
-                            setOpenDialog(true);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </CardActions>
-
-                    <CardContent
-                      sx={{
-                        display: {
-                          sm: "flex",
-                        },
-                        flexGrow: {
-                          sm: 1,
-                        },
-                        paddingTop: {
-                          xs: "5px",
-                        },
-                        padding: {
-                          sm: "16px",
-                        },
-                        "&:last-child": {
-                          paddingBottom: {
-                            sm: "16px",
-                          },
-                        },
-                      }}
-                    >
-                      <Typography
-                        whiteSpace={"pre-wrap"}
-                        sx={{
-                          width: {
-                            sm: 130,
-                          },
-                          mb: {
-                            xs: 2,
-                            sm: 0,
-                          },
-                        }}
-                      >
-                        {term}
-                      </Typography>
-                      <Divider
-                        orientation="vertical"
-                        flexItem
-                        sx={{
-                          mx: {
-                            sm: 2,
-                          },
-                        }}
-                      />
-                      <Typography whiteSpace={"pre-wrap"}>{definition}</Typography>
-                    </CardContent>
-                  </Card>
-                </ListItem>
-              ))}
-            </List>
-          </>
+          <SetList
+            terms={terms}
+            onRemoveCallback={onRemoveCallback}
+            onEditCallback={onEditCallback}
+          />
         )}
-      </Container>
+      </AppContainer>
     </Section>
   );
 };

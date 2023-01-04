@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { Button, Container } from "@mui/material";
-import { Section } from "components/Section";
-import { Flashcard } from "components/Flashcard";
+import { Button } from "@mui/material";
 import { ITerm } from "interfaces";
 import { api } from "api";
 import { ChangeLevelActions } from "enums";
+import { Flashcard } from "components/Flashcard";
+import { Section } from "components/Section";
+import { AppContainer } from "components/AppContainer";
 
 const RememberEverythingPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
@@ -81,7 +82,7 @@ const RememberEverythingPage = () => {
 
   return (
     <Section>
-      <Container maxWidth="lg">
+      <AppContainer>
         {isLoading && "loading"}
 
         {finishedSet && (
@@ -101,7 +102,7 @@ const RememberEverythingPage = () => {
         ) : (
           <div>not found terms for learning</div>
         )}
-      </Container>
+      </AppContainer>
     </Section>
   );
 };

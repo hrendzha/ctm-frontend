@@ -3,7 +3,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AxiosError } from "axios";
-import { Link, Grid, Box, Container } from "@mui/material";
+import { Link, Grid, Box } from "@mui/material";
 import LockIcon from "@mui/icons-material/LockOutlined";
 import { api } from "api";
 import { Copyright } from "components/Copyright";
@@ -15,6 +15,7 @@ import { NameInputField } from "components/NameInputField";
 import { EmailInputField } from "components/EmailInputField";
 import { PasswordInputField } from "components/PasswordInputField";
 import { SubmitFormBtn } from "components/SubmitFormBtn";
+import { AppContainer } from "components/AppContainer";
 import { IJsonResponse, ISignUpFormData } from "interfaces";
 
 const SignUpPage = () => {
@@ -74,7 +75,7 @@ const SignUpPage = () => {
 
   return (
     <Section>
-      <Container maxWidth="xs">
+      <AppContainer maxWidth="xs">
         <Wrapper>
           <TitleWithIcon title="Sign up" icon={LockIcon} />
 
@@ -115,7 +116,7 @@ const SignUpPage = () => {
         </Wrapper>
 
         <Copyright />
-      </Container>
+      </AppContainer>
     </Section>
   );
 };

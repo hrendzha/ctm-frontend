@@ -4,9 +4,10 @@ import { NewTerm, TermForUpdate } from "types";
 import { LsKeys } from "utils";
 import { ChangeLevelActions } from "enums";
 
-// axios.defaults.baseURL = "http://localhost:4000/api/";
-axios.defaults.baseURL = "https://strange-newt-battledress.cyclic.app/api/";
-console.log(`process.env.NODE_ENV`, process.env.NODE_ENV);
+const DEV_CONNECTION = "http://localhost:4000/api/";
+const PROD_CONNECTION = "https://strange-newt-battledress.cyclic.app/api/";
+
+axios.defaults.baseURL = process.env.NODE_ENV === "development" ? DEV_CONNECTION : PROD_CONNECTION;
 
 const token = {
   set(token: string) {
@@ -118,12 +119,12 @@ const api = {
     },
     update: async (term: TermForUpdate) => {
       try {
-        await axios.patch(`/terms/${term._id}`, {
+        const { data }: { data: IJsonResponse<ITerm> } = await axios.patch(`/terms/${term._id}`, {
           term: term.term,
           definition: term.definition,
         });
 
-        return true;
+        return data.data;
       } catch (error) {
         throw error;
       }

@@ -3,7 +3,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link, Grid, Box, Container, Typography } from "@mui/material";
+import { Link, Grid, Box, Typography } from "@mui/material";
 import LockIcon from "@mui/icons-material/LockOutlined";
 import { Copyright } from "components/Copyright";
 import { signInFormSchema } from "yup/schemas";
@@ -13,6 +13,7 @@ import { TitleWithIcon } from "components/TitleWithIcon";
 import { EmailInputField } from "components/EmailInputField";
 import { PasswordInputField } from "components/PasswordInputField";
 import { SubmitFormBtn } from "components/SubmitFormBtn";
+import { AppContainer } from "components/AppContainer";
 import { ICredentials, IJsonResponse } from "interfaces";
 import { useAuth } from "hooks";
 
@@ -69,7 +70,7 @@ const SignInPage = () => {
 
   return (
     <Section>
-      <Container maxWidth="xs">
+      <AppContainer maxWidth="xs">
         <Wrapper>
           <TitleWithIcon title="Sign in" icon={LockIcon} />
 
@@ -110,7 +111,7 @@ const SignInPage = () => {
         </Wrapper>
 
         <Copyright />
-      </Container>
+      </AppContainer>
     </Section>
   );
 };

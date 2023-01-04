@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
-import { Button, Container } from "@mui/material";
+import { Button } from "@mui/material";
 import { Section } from "components/Section";
+import { AppContainer } from "components/AppContainer";
 
 const ExercisesPage = () => {
   return (
     <Section>
-      <Container maxWidth="lg">
+      <AppContainer>
         <Button component={Link} to="/remember-everything" variant="contained">
           Remember everything
         </Button>
-      </Container>
+      </AppContainer>
     </Section>
   );
 };

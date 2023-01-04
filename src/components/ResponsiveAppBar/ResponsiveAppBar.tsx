@@ -1,4 +1,5 @@
-import { AppBar, Container, Toolbar } from "@mui/material";
+import { AppBar, Toolbar } from "@mui/material";
+import { AppContainer } from "components/AppContainer";
 import { MobileNav } from "components/MobileNav";
 import { PcNav } from "components/PcNav";
 import { UserMenu } from "components/UserMenu";
@@ -9,7 +10,7 @@ const ResponsiveAppBar = () => {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <AppContainer maxWidth="xl">
         <Toolbar
           disableGutters
           sx={{
@@ -25,7 +26,7 @@ const ResponsiveAppBar = () => {
 
           {user && <UserMenu />}
         </Toolbar>
-      </Container>
+      </AppContainer>
     </AppBar>
   );
 };
