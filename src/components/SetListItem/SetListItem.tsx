@@ -12,16 +12,33 @@ import {
   Divider,
   Box,
   TextField,
+  styled,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import ImageIcon from "@mui/icons-material/Image";
 import { useConfirm } from "material-ui-confirm";
-import { ITerm } from "interfaces";
+import { blueGrey } from "@mui/material/colors";
+import { IImageItem, ITerm } from "interfaces";
 import { api } from "api";
 import { NewTerm } from "types";
 import { newTermSchema } from "yup/schemas";
+import { SetListItemImagesBlock } from "components/SetListItemImagesBlock";
+import { ZoomableImage } from "components/ZoomableImage";
+
+const RemoveImgBtn = styled(IconButton)(() => ({
+  position: "absolute",
+  top: 5,
+  right: 5,
+  backgroundColor: blueGrey[800],
+  "&:hover, &.Mui-focusVisible": {
+    backgroundColor: "rgba(0, 0, 0, 0.14)",
+    "& .MuiSvgIcon-root": {
+      color: "#000",
+    },
+  },
+}));
 
 interface IProps {
   term: ITerm;
@@ -43,9 +60,13 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
     mode: "onChange",
     resolver: yupResolver(newTermSchema),
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const [removingInProgress, setRemovingInProgress] = useState(false);
   const [editingInProgress, setEditingInProgress] = useState(false);
+  const [addingImageInProgress, setAddingImageInProgress] = useState(false);
+  const [removingImageInProgress, setRemovingImageInProgress] = useState(false);
+  const [shouldShowImagesBlock, setShouldShowImagesBlock] = useState(false);
   const confirm = useConfirm();
 
   const onTermRemoveClick = async () => {
@@ -73,10 +94,7 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
       ) {
         try {
           setEditingInProgress(true);
-          const updatedTerm = await api.terms.update({
-            _id: term._id,
-            ...formValues,
-          });
+          const updatedTerm = await api.terms.update(term._id, formValues);
 
           onEditCallback(updatedTerm);
         } catch (error) {
@@ -93,6 +111,40 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
     setIsEditing(val => !val);
   };
 
+  const onRemoveImageClick = async () => {
+    try {
+      setRemovingImageInProgress(true);
+      const updatedTerm = await api.terms.update(term._id, {
+        imageUrl: "",
+      });
+      onEditCallback(updatedTerm);
+    } catch (error) {
+      console.log("catch", error);
+    } finally {
+      setRemovingImageInProgress(false);
+    }
+  };
+
+  const onSetImageClick = async (imageModel: IImageItem) => {
+    if (imageModel.url === term.imageUrl) return;
+
+    try {
+      setAddingImageInProgress(true);
+      const updatedTerm = await api.terms.update(term._id, {
+        imageUrl: imageModel.url,
+      });
+      onEditCallback(updatedTerm);
+    } catch (error) {
+      console.log("catch", error);
+    } finally {
+      setAddingImageInProgress(false);
+    }
+  };
+
+  const onAddImageClick = async () => {
+    setShouldShowImagesBlock(prevVal => !prevVal);
+  };
+
   return (
     <ListItem disableGutters>
       <Card sx={{ width: "100%" }}>
@@ -103,7 +155,7 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
 
           <Box>
             <Tooltip title="Add image">
-              <IconButton aria-label="add image" onClick={() => {}}>
+              <IconButton aria-label="add image" onClick={onAddImageClick}>
                 <ImageIcon />
               </IconButton>
             </Tooltip>
@@ -134,18 +186,18 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
 
         <CardContent
           sx={{
-            display: {
-              sm: "flex",
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
             },
+            gap: 2,
           }}
         >
           <Box
             sx={{
               width: {
                 sm: "50%",
-              },
-              mr: {
-                sm: 2,
               },
             }}
           >
@@ -162,17 +214,7 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
                 size="medium"
               />
             ) : (
-              <Typography
-                whiteSpace={"pre-wrap"}
-                sx={{
-                  mb: {
-                    xs: 2,
-                    sm: 0,
-                  },
-                }}
-              >
-                {term.term}
-              </Typography>
+              <Typography whiteSpace={"pre-wrap"}>{term.term}</Typography>
             )}
           </Box>
 
@@ -181,6 +223,8 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
               width: {
                 sm: "50%",
               },
+              display: "flex",
+              gap: 2,
             }}
           >
             {isEditing ? (
@@ -196,12 +240,61 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
                 size="medium"
               />
             ) : (
-              <Typography whiteSpace={"pre-wrap"}>{term.definition}</Typography>
-            )}
+              <>
+                <Typography
+                  sx={{
+                    flexGrow: 1,
+                  }}
+                  whiteSpace={"pre-wrap"}
+                >
+                  {term.definition}
+                </Typography>
+                {term.imageUrl && (
+                  <Card
+                    sx={{
+                      position: "relative",
+                      width: {
+                        xs: "84px",
+                      },
+                      height: {
+                        xs: "60px",
+                      },
+                      flexShrink: 0,
+                    }}
+                  >
+                    <ZoomableImage src={term.imageUrl} desc={term.term}>
+                      <img
+                        style={{
+                          display: "inline-block",
+                          objectFit: "contain",
+                          maxHeight: "100%",
+                        }}
+                        src={term.imageUrl}
+                        alt={term.term}
+                        loading="lazy"
+                      />
+                    </ZoomableImage>
 
-            <Box>{term.imageUrl.length > 0 && <img />}</Box>
+                    <RemoveImgBtn
+                      aria-label="remove image"
+                      onClick={onRemoveImageClick}
+                      disabled={removingImageInProgress}
+                      size="small"
+                    >
+                      <DeleteIcon sx={{ width: "16px", height: "16px", color: "#fff" }} />
+                    </RemoveImgBtn>
+                  </Card>
+                )}
+              </>
+            )}
           </Box>
         </CardContent>
+
+        {shouldShowImagesBlock && (
+          <div {...(addingImageInProgress && { inert: "true" })}>
+            <SetListItemImagesBlock searchValue={term.term} onSetImageClick={onSetImageClick} />
+          </div>
+        )}
       </Card>
     </ListItem>
   );

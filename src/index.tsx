@@ -7,6 +7,7 @@ import { AuthProvider } from "components/AuthProvider";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import { ConfirmProvider } from "material-ui-confirm";
+import "./css/index.css";
 
 const cacheNoPrefixer = createCache({
   key: "noprefixer",
@@ -16,20 +17,20 @@ const cacheNoPrefixer = createCache({
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <CacheProvider value={cacheNoPrefixer}>
-        <ConfirmProvider
-          defaultOptions={{
-            confirmationButtonProps: { autoFocus: true },
-          }}
-        >
-          <CssBaseline />
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </ConfirmProvider>
-      </CacheProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  //   <React.StrictMode>
+  <BrowserRouter>
+    <CacheProvider value={cacheNoPrefixer}>
+      <ConfirmProvider
+        defaultOptions={{
+          confirmationButtonProps: { autoFocus: true },
+        }}
+      >
+        <CssBaseline />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ConfirmProvider>
+    </CacheProvider>
+  </BrowserRouter>
+  //   </React.StrictMode>
 );

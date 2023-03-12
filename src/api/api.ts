@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ICredentials, IJsonResponse, ISignUpFormData, ITerm, IUser } from "interfaces";
+import { ICredentials, IJsonResponse, IImageItem, ISignUpFormData, ITerm, IUser } from "interfaces";
 import { NewTerm, TermForUpdate } from "types";
 import { LsKeys } from "utils";
 import { ChangeLevelActions } from "enums";
@@ -117,12 +117,12 @@ const api = {
         throw error;
       }
     },
-    update: async (term: TermForUpdate) => {
+    update: async (_id: string, dataForUpdate: TermForUpdate) => {
       try {
-        const { data }: { data: IJsonResponse<ITerm> } = await axios.patch(`/terms/${term._id}`, {
-          term: term.term,
-          definition: term.definition,
-        });
+        const { data }: { data: IJsonResponse<ITerm> } = await axios.patch(
+          `/terms/${_id}`,
+          dataForUpdate
+        );
 
         return data.data;
       } catch (error) {
@@ -136,6 +136,33 @@ const api = {
         });
 
         return true;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+
+  images: {
+    get: async (searchQuery = "", page = 1, perPage = 10, axiosConfig = {}) => {
+      const searchParams = new URLSearchParams({
+        searchQuery,
+        page: String(page),
+        perPage: String(perPage),
+      });
+
+      try {
+        interface IData {
+          items: IImageItem[];
+          total: number;
+          totalPages: number;
+          page: number;
+        }
+        const { data }: { data: IJsonResponse<IData> } = await axios.get(
+          `/images?${searchParams}`,
+          axiosConfig
+        );
+
+        return data.data;
       } catch (error) {
         throw error;
       }

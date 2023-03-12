@@ -2,21 +2,13 @@ import { useEffect, useState } from "react";
 import { Section } from "components/Section";
 import { api } from "api";
 import { ITerm } from "interfaces";
-import { TermForUpdate } from "types";
 import { AddTermDialog } from "components/AddTermDialog";
 import { AppContainer } from "components/AppContainer";
 import { AppSpeedDial } from "components/AppSpeedDial";
 import { SetList } from "components/SetList";
 
-const defaultTermForUpdate: TermForUpdate = {
-  _id: "",
-  term: "",
-  definition: "",
-};
-
 const SetPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
-  const [termForUpdate, setTermForUpdate] = useState(defaultTermForUpdate);
   const [isLoading, setIsLoading] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -50,10 +42,7 @@ const SetPage = () => {
   };
 
   const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => {
-    setTermForUpdate(defaultTermForUpdate);
-    setOpenDialog(false);
-  };
+  const handleCloseDialog = () => setOpenDialog(false);
 
   useEffect(() => {
     const getTermsOnMount = async () => {
@@ -80,7 +69,6 @@ const SetPage = () => {
           handleCloseDialog();
           getTerms();
         }}
-        termForUpdate={termForUpdate}
       />
 
       <AppContainer>

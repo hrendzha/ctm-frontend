@@ -1,0 +1,11 @@
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+}
+
+[inert] {
+  opacity: 0.5;
+}

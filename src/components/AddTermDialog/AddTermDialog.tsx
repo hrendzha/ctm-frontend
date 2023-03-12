@@ -8,7 +8,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Button } from "@mui/material";
 import { newTermSchema } from "yup/schemas";
 import { api } from "api";
-import { NewTerm, TermForUpdate } from "types";
+import { NewTerm } from "types";
+import { ITerm } from "interfaces";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -50,7 +51,7 @@ interface IDialogProps {
   open: boolean;
   onClose: VoidFunction;
   onSave: VoidFunction;
-  termForUpdate: TermForUpdate;
+  termForUpdate?: ITerm;
 }
 
 const AddTermDialog = ({ open, onClose, onSave, termForUpdate }: IDialogProps) => {
@@ -74,8 +75,8 @@ const AddTermDialog = ({ open, onClose, onSave, termForUpdate }: IDialogProps) =
   const onSubmit = async (formData: NewTerm) => {
     try {
       setIsSubmitting(true);
-      if (termForUpdate._id) {
-        await api.terms.update({ _id: termForUpdate._id, ...formData });
+      if (termForUpdate) {
+        await api.terms.update(termForUpdate._id, formData);
       } else {
         await api.terms.create(formData);
       }
@@ -88,9 +89,11 @@ const AddTermDialog = ({ open, onClose, onSave, termForUpdate }: IDialogProps) =
   };
 
   useEffect(() => {
-    setValue("term", termForUpdate.term);
-    setValue("definition", termForUpdate.definition);
-  }, [setValue, termForUpdate._id, termForUpdate.definition, termForUpdate.term]);
+    if (termForUpdate) {
+      setValue("term", termForUpdate.term);
+      setValue("definition", termForUpdate.definition);
+    }
+  }, [setValue, termForUpdate, termForUpdate?._id, termForUpdate?.definition, termForUpdate?.term]);
 
   useEffect(() => {
     if (!open) {
