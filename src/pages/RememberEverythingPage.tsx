@@ -17,7 +17,7 @@ const RememberEverythingPage = () => {
   const currentTerm = terms[termIdx];
 
   const toggleRotate = () => {
-    setCardRotate(prevRotate => prevRotate + 180);
+    setCardRotate(prevRotate => (prevRotate === 0 ? 180 : 0));
   };
 
   const getTerms = async () => {
@@ -81,8 +81,16 @@ const RememberEverythingPage = () => {
   const showTerm = !isLoading && terms.length > 0;
 
   return (
-    <Section>
-      <AppContainer>
+    <Section
+      sx={{
+        height: "100%",
+      }}
+    >
+      <AppContainer
+        sx={{
+          height: "100%",
+        }}
+      >
         {isLoading && "loading"}
 
         {finishedSet && (

@@ -4,7 +4,8 @@ import { NewTerm, TermForUpdate } from "types";
 import { LsKeys } from "utils";
 import { ChangeLevelActions } from "enums";
 
-const DEV_CONNECTION = "http://localhost:4000/api/";
+// const DEV_CONNECTION = "http://localhost:4000/api/";
+const DEV_CONNECTION = "http://192.168.0.3:4000/api";
 const PROD_CONNECTION = "https://strange-newt-battledress.cyclic.app/api/";
 
 axios.defaults.baseURL = process.env.NODE_ENV === "development" ? DEV_CONNECTION : PROD_CONNECTION;
