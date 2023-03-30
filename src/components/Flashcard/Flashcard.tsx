@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/material";
-import ButtonUnstyled, { buttonUnstyledClasses } from "@mui/base/ButtonUnstyled";
+import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { ITerm } from "interfaces";
 import { ChangeLevelActions, FlashcardSideType } from "enums";
 import { FlashcardOneSide } from "components/FlashcardOneSide";
@@ -45,7 +45,7 @@ const Flashcard = ({ term, changeLevel, cardRotate, toggleRotate, isChangingLeve
         sx={{
           height: "100%",
           margin: "0 auto",
-          perspective: 1000,
+          perspective: 1500,
         }}
       >
         <RotateBox

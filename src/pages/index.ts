@@ -4,3 +4,4 @@ export * from "./ExercisesPage";
 export * from "./SignInPage";
 export * from "./SignUpPage";
 export * from "./RememberEverythingPage";
+export * from "./UserSettingsPage";

@@ -8,10 +8,14 @@ import {
   useTheme,
   useMediaQuery,
   ButtonGroup,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import { ITerm } from "interfaces";
 import { ChangeLevelActions, FlashcardSideType } from "enums";
 import { ZoomableImage } from "components/ZoomableImage";
+import { useSpeechSynthesis } from "hooks";
 
 interface IProps {
   term: ITerm;
@@ -25,11 +29,21 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
   const theme = useTheme();
 
   const btnSize = useMediaQuery(theme.breakpoints.up("sm")) ? "medium" : "small";
+  const { speak } = useSpeechSynthesis();
 
   const onBtnClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    const action = Number(e.currentTarget.dataset.type);
+    const action: ChangeLevelActions = Number(e.currentTarget.dataset.type);
     changeLevel(action);
+  };
+
+  const onSoundClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+
+    if (!speechSynthesis) return;
+
+    const text = sideType === FlashcardSideType.Term ? term.term : term.definition;
+    speak(text);
   };
 
   const showImage = sideType === FlashcardSideType.Definition && term.imageUrl;
@@ -49,9 +63,19 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
       }}
       {...(inert && { inert: "true" })}
     >
-      <Box sx={{ padding: "16px" }}>
-        <Typography>{sideType === FlashcardSideType.Term ? "Term" : "Definition"}</Typography>
-      </Box>
+      <CardActions sx={{ justifyContent: "space-between", padding: 2 }}>
+        <Typography>
+          {sideType === FlashcardSideType.Term ? "Term" : "Definition"} L: <b>{term.level}</b>
+        </Typography>
+
+        <Box sx={{ display: "none" }}>
+          <Tooltip title="Sound">
+            <IconButton aria-label="sound" onClick={onSoundClick}>
+              <VolumeUpIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </CardActions>
 
       <CardContent
         sx={{
@@ -107,7 +131,13 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
             overflowY: "auto",
           }}
         >
-          <Typography whiteSpace={"pre-wrap"} variant="h4" component="p" textAlign="center">
+          <Typography
+            sx={{ overflowWrap: "anywhere" }}
+            whiteSpace={"pre-wrap"}
+            variant="h4"
+            component="p"
+            textAlign="center"
+          >
             {sideType === FlashcardSideType.Term ? term.term : term.definition}
           </Typography>
         </Box>

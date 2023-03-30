@@ -23,9 +23,7 @@ const RememberEverythingPage = () => {
   const getTerms = async () => {
     try {
       const terms = await api.terms.getForLearn();
-      if (terms.length > 0) {
-        setFinishedSet(false);
-      }
+      setFinishedSet(false);
       setTerms(terms);
     } catch (error) {}
   };
@@ -50,7 +48,10 @@ const RememberEverythingPage = () => {
     async (action: ChangeLevelActions) => {
       try {
         setIsChangingLevel(true);
-        await api.terms.changeLevel(currentTerm._id, action);
+
+        if (action !== ChangeLevelActions.Keep) {
+          await api.terms.changeLevel(currentTerm._id, action);
+        }
 
         setCardRotate(0);
         getNext();
@@ -78,7 +79,7 @@ const RememberEverythingPage = () => {
     getTermsWithLoading();
   }, []);
 
-  const showTerm = !isLoading && terms.length > 0;
+  const showTerm = terms.length > 0;
 
   return (
     <Section
@@ -91,7 +92,7 @@ const RememberEverythingPage = () => {
           height: "100%",
         }}
       >
-        {isLoading && "loading"}
+        {isLoading && !finishedSet && <div>loading</div>}
 
         {finishedSet && (
           <Button variant="contained" onClick={getTermsWithLoading} disabled={isLoading}>
@@ -99,7 +100,9 @@ const RememberEverythingPage = () => {
           </Button>
         )}
 
-        {showTerm ? (
+        {!isLoading && terms.length < 1 && !finishedSet && <div>not found terms for learning</div>}
+
+        {showTerm && (
           <Flashcard
             term={currentTerm}
             changeLevel={changeLevel}
@@ -107,8 +110,6 @@ const RememberEverythingPage = () => {
             toggleRotate={toggleRotate}
             isChangingLevel={isChangingLevel}
           />
-        ) : (
-          <div>not found terms for learning</div>
         )}
       </AppContainer>
     </Section>

@@ -8,6 +8,7 @@ import {
   SignUpPage,
   SetPage,
   RememberEverythingPage,
+  UserSettingsPage,
 } from "pages";
 import { Layout } from "components/Layout";
 import { PublicRoute } from "components/PublicRoute";
@@ -55,6 +56,7 @@ const App = () => {
             </PublicRoute>
           }
         />
+
         <Route
           path="/set"
           element={
@@ -78,6 +80,15 @@ const App = () => {
           element={
             <PrivateRoute redirectTo="/sign-in">
               <RememberEverythingPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/user-settings"
+          element={
+            <PrivateRoute redirectTo="/sign-in">
+              <UserSettingsPage />
             </PrivateRoute>
           }
         />

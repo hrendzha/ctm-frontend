@@ -1,43 +1,16 @@
 import { useState } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
-import {
-  IconButton,
-  Link as MuiLink,
-  Menu,
-  MenuItem as MuiMenuItem,
-  MenuItemProps,
-} from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+import { IconButton, Menu, MenuItem as MuiMenuItem, MenuItemProps } from "@mui/material";
 import { Box } from "@mui/system";
 import { styled } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Logo } from "components/Logo";
+import { MobileMenuLink } from "components/MobileMenuLink";
 import { User } from "types";
 
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(() => ({
   padding: 0,
 }));
-
-interface ILinkProps {
-  children: React.ReactNode;
-  component: React.ElementType<any>;
-  to: string;
-}
-const Link = ({ children, component, to }: ILinkProps) => {
-  const { pathname } = useLocation();
-  const color = pathname === to ? "primary" : "inherit";
-
-  return (
-    <MuiLink
-      component={component}
-      to={to}
-      underline="none"
-      color={color}
-      sx={{ padding: "6px 16px", width: "100%" }}
-    >
-      {children}
-    </MuiLink>
-  );
-};
 
 interface IProps {
   user: User;
@@ -90,39 +63,39 @@ const MobileNav = ({ user }: IProps) => {
             display: { xs: "block", md: "none" },
           }}
         >
-          <MenuItem onClick={handleCloseNavMenu}>
-            <Link component={RouterLink} to="/">
+          <MuiMenuItem onClick={handleCloseNavMenu} disableGutters>
+            <MobileMenuLink component={RouterLink} to="/">
               Home
-            </Link>
-          </MenuItem>
+            </MobileMenuLink>
+          </MuiMenuItem>
           {user && (
-            <MenuItem onClick={handleCloseNavMenu}>
-              <Link component={RouterLink} to="/set">
+            <MuiMenuItem onClick={handleCloseNavMenu} disableGutters>
+              <MobileMenuLink component={RouterLink} to="/set">
                 Set
-              </Link>
-            </MenuItem>
+              </MobileMenuLink>
+            </MuiMenuItem>
           )}
           {user && (
-            <MenuItem onClick={handleCloseNavMenu}>
-              <Link component={RouterLink} to="/exercises">
+            <MuiMenuItem onClick={handleCloseNavMenu} disableGutters>
+              <MobileMenuLink component={RouterLink} to="/exercises">
                 Study
-              </Link>
-            </MenuItem>
+              </MobileMenuLink>
+            </MuiMenuItem>
           )}
 
           {!user && (
-            <MenuItem onClick={handleCloseNavMenu}>
-              <Link component={RouterLink} to="/sign-up">
+            <MuiMenuItem onClick={handleCloseNavMenu} disableGutters>
+              <MobileMenuLink component={RouterLink} to="/sign-up">
                 Sign up
-              </Link>
-            </MenuItem>
+              </MobileMenuLink>
+            </MuiMenuItem>
           )}
           {!user && (
-            <MenuItem onClick={handleCloseNavMenu}>
-              <Link component={RouterLink} to="/sign-in">
+            <MuiMenuItem onClick={handleCloseNavMenu} disableGutters>
+              <MobileMenuLink component={RouterLink} to="/sign-in">
                 Sign in
-              </Link>
-            </MenuItem>
+              </MobileMenuLink>
+            </MuiMenuItem>
           )}
         </Menu>
       </Box>

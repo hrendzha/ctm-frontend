@@ -2,6 +2,13 @@
   "name": "ctm-frontend",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "predeploy": "npm run build",
+    "deploy": "netlify deploy --prod"
+  },
   "dependencies": {
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
@@ -20,13 +27,6 @@
     "react-scripts": "5.0.1",
     "typescript": "^4.7.4",
     "yup": "^0.32.11"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "predeploy": "npm run build",
-    "deploy": "netlify deploy --prod"
   },
   "eslintConfig": {
     "extends": [

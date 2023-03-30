@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Section } from "components/Section";
 import { api } from "api";
 import { ITerm } from "interfaces";
-import { AddTermDialog } from "components/AddTermDialog";
+import { Section } from "components/Section";
 import { AppContainer } from "components/AppContainer";
+import { AddTermDialog } from "components/AddTermDialog";
 import { AppSpeedDial } from "components/AppSpeedDial";
 import { SetList } from "components/SetList";
 

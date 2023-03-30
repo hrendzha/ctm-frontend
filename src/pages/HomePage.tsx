@@ -7,8 +7,7 @@ const HomePage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "100vw",
-        height: "calc(100vh - 64px)",
+        height: "100%",
       }}
     >
       <Typography variant="h2" textAlign="center">

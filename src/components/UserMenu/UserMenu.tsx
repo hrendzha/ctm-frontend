@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { Box } from "@mui/system";
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from "@mui/material";
-import { Logout } from "@mui/icons-material";
+import { Logout, Settings } from "@mui/icons-material";
 import { getAvatarByName } from "utils/getAvatarByName";
 import { useAuth } from "hooks/useAuth";
 import { CircularLoader } from "components/CircularLoader";
+import { MobileMenuLink } from "components/MobileMenuLink";
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
@@ -60,6 +62,15 @@ const UserMenu = () => {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
+        <MenuItem onClick={handleCloseUserMenu} disableGutters>
+          <MobileMenuLink component={RouterLink} to="/user-settings">
+            <ListItemIcon>
+              <Settings fontSize="small" />
+            </ListItemIcon>
+            Settings
+          </MobileMenuLink>
+        </MenuItem>
+
         <MenuItem onClick={handleSignOut} disabled={isLogOutLoading}>
           <ListItemIcon>
             <Logout fontSize="small" />

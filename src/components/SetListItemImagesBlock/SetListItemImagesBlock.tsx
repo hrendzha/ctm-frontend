@@ -13,7 +13,7 @@ import {
   Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useImages } from "hooks/useImages";
+import { useImages } from "hooks";
 import { IImageItem } from "interfaces";
 
 interface IProps {
