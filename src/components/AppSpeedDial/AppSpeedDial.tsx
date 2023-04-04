@@ -1,6 +1,6 @@
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from "@mui/material";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
-import { isTouchDevice } from "utils/isTouchDevice";
+import { isTouchDevice } from "utils";
 
 interface IProps {
   onAddTermClick?: Function;

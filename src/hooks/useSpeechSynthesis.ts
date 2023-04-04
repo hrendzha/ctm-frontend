@@ -1,16 +1,10 @@
-const loadVoices = () => {
-  const voices = speechSynthesis.getVoices();
-  //   console.log(`voices`, voices);
-};
+import { DEFAULT_VOICE_SETTINGS, LsKeys } from "constants-local";
+import { IVoiceSettings } from "interfaces";
+import { loadVoices } from "utils";
 
-// in Google Chrome the voices are not ready on page load
-if (speechSynthesis && speechSynthesis.getVoices().length < 1) {
-  speechSynthesis.onvoiceschanged = loadVoices;
-} else {
-  loadVoices();
-}
+let voices: SpeechSynthesisVoice[] | null = null;
 
-const speak = (text: string) => {
+const speak = async (text: string) => {
   if (!speechSynthesis) return;
 
   if (speechSynthesis.speaking || speechSynthesis.pending) {
@@ -18,11 +12,18 @@ const speak = (text: string) => {
     return;
   }
 
+  if (voices === null) {
+    voices = await loadVoices();
+  }
+
+  const voiceSettingsLs = localStorage.getItem(LsKeys.VoiceSettings);
+  const voiceSettings: IVoiceSettings =
+    voiceSettingsLs !== null ? JSON.parse(voiceSettingsLs) : DEFAULT_VOICE_SETTINGS;
+
   const speechSynthesisUtterance = new SpeechSynthesisUtterance(text);
-  // speechSynthesisUtterance.lang = "en-US";
-  // speechSynthesisUtterance.onerror = event => {
-  //   console.log(`event`, event);
-  // };
+  speechSynthesisUtterance.voice = voices[voiceSettings.voiceIndex];
+  speechSynthesisUtterance.rate = voiceSettings.rate;
+  speechSynthesisUtterance.pitch = voiceSettings.pitch;
 
   speechSynthesis.speak(speechSynthesisUtterance);
 };

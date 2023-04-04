@@ -1,24 +1,23 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Button from "@mui/material/Button";
+import { ThemeProvider, createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-const theme = createTheme({
+let theme = createTheme({
   components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          fontSize: "1rem",
-        },
+    MuiUseMediaQuery: {
+      defaultProps: {
+        // https://mui.com/material-ui/react-use-media-query/#client-side-only-rendering
+        noSsr: true,
       },
     },
   },
 });
+theme = responsiveFontSizes(theme);
 
-const GlobalThemeOverride = () => {
-  return (
-    <ThemeProvider theme={theme}>
-      <Button>font-size: 1rem</Button>
-    </ThemeProvider>
-  );
+interface IProps {
+  children: React.ReactNode;
+}
+
+const GlobalThemeOverride = ({ children }: IProps) => {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
 export { GlobalThemeOverride };

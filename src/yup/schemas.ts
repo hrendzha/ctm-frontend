@@ -45,6 +45,7 @@ const TERM_FIELDS_LENGTH = {
     Max: 1000,
   },
 };
+
 const newTermSchema = yup
   .object({
     term: yup
@@ -74,4 +75,16 @@ const newTermSchema = yup
   })
   .required();
 
-export { signUpFormSchema, signInFormSchema, addContactFormSchema, newTermSchema };
+const pronunciationSettingsSchema = yup
+  .object({
+    text: yup.string().trim().required("Text is a required field"),
+  })
+  .required();
+
+export {
+  signUpFormSchema,
+  signInFormSchema,
+  addContactFormSchema,
+  newTermSchema,
+  pronunciationSettingsSchema,
+};

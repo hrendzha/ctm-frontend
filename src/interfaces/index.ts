@@ -5,3 +5,4 @@ export * from "./JsonResponse.interface";
 export * from "./SignUpFormData.interface";
 export * from "./Term.interface";
 export * from "./ImageItem.interface";
+export * from "./VoiceSettings.interface";

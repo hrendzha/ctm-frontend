@@ -40,8 +40,6 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
   const onSoundClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
 
-    if (!speechSynthesis) return;
-
     const text = sideType === FlashcardSideType.Term ? term.term : term.definition;
     speak(text);
   };
@@ -68,7 +66,7 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
           {sideType === FlashcardSideType.Term ? "Term" : "Definition"} L: <b>{term.level}</b>
         </Typography>
 
-        <Box sx={{ display: "none" }}>
+        <Box>
           <Tooltip title="Sound">
             <IconButton aria-label="sound" onClick={onSoundClick}>
               <VolumeUpIcon />

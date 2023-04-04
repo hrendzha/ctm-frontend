@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ICredentials, IJsonResponse, IImageItem, ISignUpFormData, ITerm, IUser } from "interfaces";
 import { NewTerm, TermForUpdate } from "types";
-import { LsKeys } from "utils";
+import { LsKeys } from "constants-local";
 import { ChangeLevelActions } from "enums";
 
 // const DEV_CONNECTION = "http://localhost:4000/api/";

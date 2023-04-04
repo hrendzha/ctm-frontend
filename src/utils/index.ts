@@ -1,2 +1,3 @@
 export * from "./getAvatarByName";
-export * from "./lsKeys";
+export * from "./isTouchDevice";
+export * from "./loadVoices";
