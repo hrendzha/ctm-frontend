@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { ITerm } from "interfaces";
 import { api } from "api";
 import { ChangeLevelActions } from "enums";
 import { Flashcard } from "components/Flashcard";
 import { Section } from "components/Section";
 import { AppContainer } from "components/AppContainer";
+
+/**
+ * Function to normalize the values
+ * @param value - Current value
+ * @param min - Minimum expected value
+ * @param max - Maximum expected value
+ */
+const normalizeProgress = (value: number, min: number, max: number) =>
+  ((value - min) * 100) / (max - min);
 
 const RememberEverythingPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
@@ -61,6 +70,8 @@ const RememberEverythingPage = () => {
         setIsChangingLevel(false);
       }
     },
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentTerm]
   );
 
@@ -77,42 +88,67 @@ const RememberEverythingPage = () => {
 
   useEffect(() => {
     getTermsWithLoading();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showTerm = terms.length > 0;
+  const progressValue = normalizeProgress(termIdx, 0, terms.length - 1);
 
   return (
-    <Section
-      sx={{
-        height: "100%",
-      }}
-    >
-      <AppContainer
+    <>
+      <LinearProgress
+        sx={{ position: "absolute", width: "100%", backgroundColor: "unset" }}
+        variant="determinate"
+        color="info"
+        value={progressValue}
+      />
+
+      <Section
         sx={{
           height: "100%",
+          py: {
+            xs: 2,
+            md: 3,
+            lg: 4,
+          },
         }}
       >
-        {isLoading && !finishedSet && <div>loading</div>}
+        <AppContainer
+          sx={{
+            height: "100%",
+          }}
+        >
+          {isLoading && !finishedSet && <div>loading</div>}
 
-        {finishedSet && (
-          <Button variant="contained" onClick={getTermsWithLoading} disabled={isLoading}>
-            Try again
-          </Button>
-        )}
+          {finishedSet && (
+            <Button variant="contained" onClick={getTermsWithLoading} disabled={isLoading}>
+              Try again
+            </Button>
+          )}
 
-        {!isLoading && terms.length < 1 && !finishedSet && <div>not found terms for learning</div>}
+          {!isLoading && terms.length < 1 && !finishedSet && (
+            <div>not found terms for learning</div>
+          )}
 
-        {showTerm && (
-          <Flashcard
-            term={currentTerm}
-            changeLevel={changeLevel}
-            cardRotate={cardRotate}
-            toggleRotate={toggleRotate}
-            isChangingLevel={isChangingLevel}
-          />
-        )}
-      </AppContainer>
-    </Section>
+          {showTerm && (
+            <Box sx={{ height: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
+              <Box>
+                <Typography component="div" textAlign="center" variant="h6">
+                  {termIdx + 1} / {terms.length}
+                </Typography>
+              </Box>
+              <Flashcard
+                term={currentTerm}
+                changeLevel={changeLevel}
+                cardRotate={cardRotate}
+                toggleRotate={toggleRotate}
+                isChangingLevel={isChangingLevel}
+              />
+            </Box>
+          )}
+        </AppContainer>
+      </Section>
+    </>
   );
 };
 
