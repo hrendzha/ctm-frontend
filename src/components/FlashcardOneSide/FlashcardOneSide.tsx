@@ -28,7 +28,7 @@ interface IProps {
 const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, inert }: IProps) => {
   const theme = useTheme();
 
-  const btnSize = useMediaQuery(theme.breakpoints.up("sm")) ? "medium" : "small";
+  const btnSize = useMediaQuery(theme.breakpoints.up("sm")) ? "large" : "medium";
   const { speak } = useSpeechSynthesis();
 
   const onBtnClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -61,7 +61,16 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
       }}
       {...(inert && { inert: "true" })}
     >
-      <CardActions sx={{ justifyContent: "space-between", padding: 2 }}>
+      <CardActions
+        sx={{
+          justifyContent: "space-between",
+          px: 2,
+          py: {
+            xs: 1,
+            md: 2,
+          },
+        }}
+      >
         <Typography>
           {sideType === FlashcardSideType.Term ? "Term" : "Definition"} L: <b>{term.level}</b>
         </Typography>
@@ -85,6 +94,11 @@ const FlashcardOneSide = memo(({ term, sideType, changeLevel, isChangingLevel, i
           flexGrow: 1,
           gap: 2,
           overflowY: "hidden",
+          px: 2,
+          py: {
+            xs: 1,
+            md: 2,
+          },
         }}
       >
         {showImage && (
