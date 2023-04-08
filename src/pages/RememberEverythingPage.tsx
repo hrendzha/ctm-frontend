@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { Box, Button, LinearProgress, Typography } from "@mui/material";
+import { Box, Button, LinearProgress, Skeleton, Typography } from "@mui/material";
 import { ITerm } from "interfaces";
 import { api } from "api";
-import { ChangeLevelActions } from "enums";
+import { ChangeLevelActions, FlashcardSideType } from "enums";
 import { Flashcard } from "components/Flashcard";
 import { Section } from "components/Section";
 import { AppContainer } from "components/AppContainer";
+
+const DEFAULT_ACTIVE_CARD_SIDE = FlashcardSideType.Definition;
 
 /**
  * Function to normalize the values
@@ -16,17 +18,30 @@ import { AppContainer } from "components/AppContainer";
 const normalizeProgress = (value: number, min: number, max: number) =>
   ((value - min) * 100) / (max - min);
 
+const boxSx = {
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: 1,
+};
+
 const RememberEverythingPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [finishedSet, setFinishedSet] = useState(false);
   const [isChangingLevel, setIsChangingLevel] = useState(false);
   const [termIdx, setTermIdx] = useState(0);
-  const [cardRotate, setCardRotate] = useState(0);
+  const [activeCardSide, setActiveCardSide] = useState<FlashcardSideType>(DEFAULT_ACTIVE_CARD_SIDE);
+  const [shouldAnimateCardFlip, setShouldAnimateCardFlip] = useState(false);
+
   const currentTerm = terms[termIdx];
 
-  const toggleRotate = () => {
-    setCardRotate(prevRotate => (prevRotate === 0 ? 180 : 0));
+  const toggleActiveCardSide = () => {
+    // enable card flip animation when user starts flip card
+    setShouldAnimateCardFlip(true);
+    setActiveCardSide(prev =>
+      prev === FlashcardSideType.Definition ? FlashcardSideType.Term : FlashcardSideType.Definition
+    );
   };
 
   const getTerms = async () => {
@@ -38,6 +53,8 @@ const RememberEverythingPage = () => {
   };
 
   const getNext = async () => {
+    // prevent card flip animation when show next card
+    setShouldAnimateCardFlip(false);
     setTermIdx(prevIdx => {
       const nextIdx = prevIdx + 1;
       const lastTermIdx = terms.length - 1;
@@ -62,7 +79,7 @@ const RememberEverythingPage = () => {
           await api.terms.changeLevel(currentTerm._id, action);
         }
 
-        setCardRotate(0);
+        setActiveCardSide(DEFAULT_ACTIVE_CARD_SIDE);
         getNext();
       } catch (error) {
         console.log("catch", error);
@@ -118,31 +135,45 @@ const RememberEverythingPage = () => {
             height: "100%",
           }}
         >
-          {isLoading && !finishedSet && <div>loading</div>}
+          {isLoading && (
+            <Box sx={boxSx}>
+              <Typography component="div" variant="h6">
+                <Skeleton sx={{ mx: "auto" }} width={50} />
+              </Typography>
+              <Skeleton variant="rounded" width="100%" height="100%" />
+            </Box>
+          )}
 
-          {finishedSet && (
+          {finishedSet && !isLoading && (
             <Button variant="contained" onClick={getTermsWithLoading} disabled={isLoading}>
               Try again
             </Button>
           )}
 
           {!isLoading && terms.length < 1 && !finishedSet && (
-            <div>not found terms for learning</div>
+            <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+              <Typography align="center" variant="h2">
+                Not found terms for learning 😿
+                <br />
+                Try again later
+              </Typography>
+            </Box>
           )}
 
           {showTerm && (
-            <Box sx={{ height: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box sx={boxSx}>
               <Box>
-                <Typography component="div" textAlign="center" variant="h6">
+                <Typography component="div" align="center" variant="h6">
                   {termIdx + 1} / {terms.length}
                 </Typography>
               </Box>
               <Flashcard
                 term={currentTerm}
-                changeLevel={changeLevel}
-                cardRotate={cardRotate}
-                toggleRotate={toggleRotate}
+                activeCardSide={activeCardSide}
                 isChangingLevel={isChangingLevel}
+                shouldAnimateCardFlip={shouldAnimateCardFlip}
+                changeLevel={changeLevel}
+                toggleActiveCardSide={toggleActiveCardSide}
               />
             </Box>
           )}

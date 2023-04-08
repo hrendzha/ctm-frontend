@@ -4,13 +4,11 @@ import { ITerm } from "interfaces";
 import { ChangeLevelActions, FlashcardSideType } from "enums";
 import { FlashcardOneSide } from "components/FlashcardOneSide";
 
-const RotateBox = styled(Box)(({ theme }) => ({
+const CardWrap = styled(Box)(() => ({
   position: "relative",
   width: "100%",
   height: "100%",
-  transformStyle: "preserve-3d",
-  borderRadius: theme.shape.borderRadius,
-  transition: `transform 0.4s`,
+  perspective: 1500,
 }));
 
 const BtnToggle = styled(ButtonUnstyled)`
@@ -32,43 +30,41 @@ const BtnToggle = styled(ButtonUnstyled)`
 
 interface IProps {
   term: ITerm;
-  changeLevel: (action: ChangeLevelActions) => void;
-  cardRotate: number;
-  toggleRotate: () => void;
+  activeCardSide: FlashcardSideType;
   isChangingLevel: boolean;
+  shouldAnimateCardFlip: boolean;
+  changeLevel: (action: ChangeLevelActions) => void;
+  toggleActiveCardSide: () => void;
 }
 
-const Flashcard = ({ term, changeLevel, cardRotate, toggleRotate, isChangingLevel }: IProps) => {
+const Flashcard = ({
+  term,
+  activeCardSide,
+  isChangingLevel,
+  shouldAnimateCardFlip,
+  changeLevel,
+  toggleActiveCardSide,
+}: IProps) => {
   return (
-    <BtnToggle onClick={toggleRotate}>
-      <Box
-        sx={{
-          height: "100%",
-          margin: "0 auto",
-          perspective: 1500,
-        }}
-      >
-        <RotateBox
-          style={{
-            transform: `rotateX(${cardRotate}deg)`,
-          }}
-        >
-          <FlashcardOneSide
-            term={term}
-            isChangingLevel={isChangingLevel}
-            sideType={FlashcardSideType.Term}
-            changeLevel={changeLevel}
-            inert={cardRotate === 0}
-          />
-          <FlashcardOneSide
-            term={term}
-            isChangingLevel={isChangingLevel}
-            sideType={FlashcardSideType.Definition}
-            changeLevel={changeLevel}
-            inert={cardRotate === 180}
-          />
-        </RotateBox>
-      </Box>
+    <BtnToggle onClick={toggleActiveCardSide}>
+      <CardWrap>
+        <FlashcardOneSide
+          term={term}
+          isChangingLevel={isChangingLevel}
+          sideType={FlashcardSideType.Term}
+          isVisible={activeCardSide === FlashcardSideType.Term}
+          shouldAnimateCardFlip={shouldAnimateCardFlip}
+          changeLevel={changeLevel}
+        />
+        <FlashcardOneSide
+          term={term}
+          isChangingLevel={isChangingLevel}
+          sideType={FlashcardSideType.Definition}
+          isVisible={activeCardSide === FlashcardSideType.Definition}
+          shouldAnimateCardFlip={shouldAnimateCardFlip}
+          changeLevel={changeLevel}
+        />
+      </CardWrap>
     </BtnToggle>
   );
 };
