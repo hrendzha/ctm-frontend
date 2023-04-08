@@ -9,7 +9,7 @@ const ResponsiveAppBar = () => {
   const { user } = useAuth();
 
   return (
-    <AppBar position="static">
+    <AppBar sx={{ zIndex: theme => theme.zIndex.appBar }} position="relative">
       <AppContainer maxWidth="xl">
         <Toolbar
           disableGutters
