@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { List, ListItem, Skeleton } from "@mui/material";
 import { api } from "api";
 import { ITerm } from "interfaces";
 import { Section } from "components/Section";
@@ -6,6 +7,9 @@ import { AppContainer } from "components/AppContainer";
 import { AddTermDialog } from "components/AddTermDialog";
 import { AppSpeedDial } from "components/AppSpeedDial";
 import { SetList } from "components/SetList";
+import { lockScroll } from "utils";
+
+const skeletons = Array(20).fill(null);
 
 const SetPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
@@ -45,6 +49,10 @@ const SetPage = () => {
   const handleCloseDialog = () => setOpenDialog(false);
 
   useEffect(() => {
+    lockScroll(isLoading);
+  });
+
+  useEffect(() => {
     const getTermsOnMount = async () => {
       try {
         setIsLoading(true);
@@ -73,7 +81,13 @@ const SetPage = () => {
 
       <AppContainer>
         {isLoading ? (
-          "loading"
+          <List disablePadding>
+            {skeletons.map((_, idx) => (
+              <ListItem key={idx} disableGutters>
+                <Skeleton variant="rounded" height={150} width="100%" />
+              </ListItem>
+            ))}
+          </List>
         ) : (
           <SetList
             terms={terms}
