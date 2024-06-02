@@ -6,7 +6,7 @@ import { ChangeLevelActions } from "enums";
 
 // const DEV_CONNECTION = "http://localhost:4000/api/";
 const DEV_CONNECTION = "http://192.168.0.3:4000/api";
-const PROD_CONNECTION = "https://strange-newt-battledress.cyclic.app/api/";
+const PROD_CONNECTION = "https://ctm-backend.onrender.com/api/";
 
 axios.defaults.baseURL = process.env.NODE_ENV === "development" ? DEV_CONNECTION : PROD_CONNECTION;
 
@@ -74,15 +74,20 @@ const api = {
   },
 
   terms: {
-    get: async () => {
+    get: async (page: number, perPage: number) => {
+      const searchParams = new URLSearchParams({
+        page: String(page),
+        perPage: String(perPage),
+      });
+
       try {
         interface IData {
           items: ITerm[];
+          totalItems: number;
         }
-        const { data }: { data: IJsonResponse<IData> } = await axios.get("/terms");
-        const terms = data.data.items;
+        const { data }: { data: IJsonResponse<IData> } = await axios.get(`/terms?${searchParams}`);
 
-        return terms;
+        return data.data;
       } catch (error) {
         throw error;
       }
