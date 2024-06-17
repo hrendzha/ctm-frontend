@@ -8,7 +8,7 @@ CTM leverages the power of interval learning to ensure that the words you learn 
 
 1. **Create a Card**: Users can create a card by adding a term and its definition. For example, if the term is "villain," the definition could be "the main bad character in a story, play, etc."
 
-2. **Learn Words**: Navigate to the learning page to review your cards. Each card has two sides: the definition side (which you see first) and the term side. Your task is to recall the term based on the definition provided.
+2. **Learn Words**: Navigate to the study page to review your cards. Each card has two sides: the definition side (which you see first) and the term side. Your task is to recall the term based on the definition provided.
 
 3. **Track Progress**: Based on your recall ability, you can interact with the card using three options:
    - **Don't Remember**: Click this if you don't remember the term, decreasing the card's level.
