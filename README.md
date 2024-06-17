@@ -6,7 +6,7 @@ Welcome to **Commit To Memory (CTM)**, an innovative EdTech project designed to 
 
 CTM leverages the power of interval learning to ensure that the words you learn are committed to long-term memory. Here's how it works:
 
-1. **Create a Card**: Users can create a card by adding a term and its definition. For example, if the term is "apple," the definition could be "It's a round fruit that's usually red, green, or yellow."
+1. **Create a Card**: Users can create a card by adding a term and its definition. For example, if the term is "villain," the definition could be "the main bad character in a story, play, etc."
 
 2. **Learn Words**: Navigate to the learning page to review your cards. Each card has two sides: the definition side (which you see first) and the term side. Your task is to recall the term based on the definition provided.
 
