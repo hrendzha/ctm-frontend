@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { List, ListItem, Skeleton } from "@mui/material";
+import {
+  Box,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  Skeleton,
+  TablePagination,
+  Tooltip,
+} from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { api } from "api";
 import { ITerm } from "interfaces";
 import { Section } from "components/Section";
@@ -8,21 +18,41 @@ import { AddTermDialog } from "components/AddTermDialog";
 import { AppSpeedDial } from "components/AppSpeedDial";
 import { SetList } from "components/SetList";
 import { lockScroll } from "utils";
+import { useFirstRender } from "hooks";
 
 const skeletons = Array(20).fill(null);
+
+const ITEMS_PER_PAGE_OPTIONS = [2, 10, 25, 50, 100];
 
 const SetPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [openDialog, setOpenDialog] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage, setITemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
+  const isFirstRender = useFirstRender();
+
+  const onPageChange = async (
+    _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const onChangeRowsPerPage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setITemsPerPage(Number(event.target.value));
+    setPage(0);
+  };
 
   const getTerms = async () => {
     try {
-      const terms = await api.terms.get();
-      setTerms(terms);
+      const data = await api.terms.get(page, itemsPerPage);
+      setTerms(data.items);
+      setTotalItems(data.totalItems);
     } catch (error) {
       console.log("catch", error);
+      throw error;
     }
   };
 
@@ -51,6 +81,11 @@ const SetPage = () => {
   useEffect(() => {
     lockScroll(isLoading);
   });
+
+  useEffect(() => {
+    if (isFirstRender) return;
+    getTerms();
+  }, [page, itemsPerPage]);
 
   useEffect(() => {
     const getTermsOnMount = async () => {
@@ -89,11 +124,33 @@ const SetPage = () => {
             ))}
           </List>
         ) : (
-          <SetList
-            terms={terms}
-            onRemoveCallback={onRemoveCallback}
-            onEditCallback={onEditCallback}
-          />
+          <>
+            <Box display="none" alignItems="center" justifyContent="space-between">
+              <Tooltip title="Filter">
+                <IconButton aria-label="filter" onClick={() => {}}>
+                  <FilterListIcon />
+                </IconButton>
+              </Tooltip>
+
+              <Drawer anchor="right">list</Drawer>
+
+              <TablePagination
+                rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
+                component="div"
+                count={totalItems}
+                rowsPerPage={itemsPerPage}
+                page={page}
+                onPageChange={onPageChange}
+                onRowsPerPageChange={onChangeRowsPerPage}
+              />
+            </Box>
+
+            <SetList
+              terms={terms}
+              onRemoveCallback={onRemoveCallback}
+              onEditCallback={onEditCallback}
+            />
+          </>
         )}
       </AppContainer>
     </Section>
