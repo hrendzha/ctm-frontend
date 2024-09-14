@@ -3,7 +3,8 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link, Grid, Box, Typography } from "@mui/material";
+import { Link, Box, Typography } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import LockIcon from "@mui/icons-material/LockOutlined";
 import { Copyright } from "components/Copyright";
 import { signInFormSchema } from "yup/schemas";
@@ -101,7 +102,7 @@ const SignInPage = () => {
             </SubmitFormBtn>
 
             <Grid container justifyContent="flex-end">
-              <Grid item>
+              <Grid>
                 <Link variant="body2" component={RouterLink} to="/sign-up">
                   Don't have an account? Sign Up
                 </Link>

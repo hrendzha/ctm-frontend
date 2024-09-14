@@ -1,5 +1,4 @@
 import { Box, styled } from "@mui/material";
-import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { ITerm } from "interfaces";
 import { ChangeLevelActions, FlashcardSideType } from "enums";
 import { FlashcardOneSide } from "components/FlashcardOneSide";
@@ -11,7 +10,7 @@ const CardWrap = styled(Box)(() => ({
   perspective: 1500,
 }));
 
-const BtnToggle = styled(ButtonUnstyled)`
+const BtnToggle = styled("div")`
   display: block;
   height: 100%;
   width: 100%;
