@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react";
 import {
   Box,
+  Button,
   Drawer,
+  FormControl,
   IconButton,
+  InputLabel,
   List,
   ListItem,
+  MenuItem,
+  Select,
   Skeleton,
+  Stack,
   TablePagination,
+  TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { api } from "api";
@@ -19,10 +27,18 @@ import { AppSpeedDial } from "components/AppSpeedDial";
 import { SetList } from "components/SetList";
 import { lockScroll } from "utils";
 import { useFirstRender } from "hooks";
+import { Controller, useForm } from "react-hook-form";
+import { availableTermLevels } from "constants-local/availableTermLevels";
+import { ICardsListFilter } from "interfaces/CardsListFilter.interface";
 
 const skeletons = Array(20).fill(null);
 
-const ITEMS_PER_PAGE_OPTIONS = [2, 10, 25, 50, 100];
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 25, 50, 100];
+
+const formDefaultValues = {
+  searchQuery: "",
+  level: -1,
+};
 
 const SetPage = () => {
   const [terms, setTerms] = useState<ITerm[]>([]);
@@ -30,8 +46,24 @@ const SetPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [page, setPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage, setITemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[1]);
+  const [drawerOpenProp, setDrawerOpenProp] = useState(false);
   const isFirstRender = useFirstRender();
+
+  const { register, handleSubmit, reset, control, getValues } = useForm<ICardsListFilter>({
+    defaultValues: formDefaultValues,
+  });
+
+  const onFilterSubmit = handleSubmit(() => {
+    setDrawerOpenProp(false);
+    if (page === 0) {
+      getTerms();
+    } else {
+      setPage(0);
+    }
+  });
+
+  const onResetForm = () => reset();
 
   const onPageChange = async (
     _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
@@ -41,13 +73,21 @@ const SetPage = () => {
   };
 
   const onChangeRowsPerPage = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setITemsPerPage(Number(event.target.value));
+    setItemsPerPage(Number(event.target.value));
     setPage(0);
   };
 
   const getTerms = async () => {
     try {
-      const data = await api.terms.get(page, itemsPerPage);
+      const formData = getValues();
+
+      const data = await api.terms.get({
+        page: page,
+        perPage: itemsPerPage,
+        searchQuery: formData.searchQuery,
+        level: formData.level === -1 ? undefined : formData.level,
+      });
+
       setTerms(data.items);
       setTotalItems(data.totalItems);
     } catch (error) {
@@ -77,6 +117,10 @@ const SetPage = () => {
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
+
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setDrawerOpenProp(newOpen);
+  };
 
   useEffect(() => {
     lockScroll(isLoading);
@@ -125,14 +169,60 @@ const SetPage = () => {
           </List>
         ) : (
           <>
-            <Box display="none" alignItems="center" justifyContent="space-between">
+            <Box display="flex" alignItems="center" justifyContent="space-between">
               <Tooltip title="Filter">
-                <IconButton aria-label="filter" onClick={() => {}}>
+                <IconButton aria-label="filter" onClick={toggleDrawer(true)}>
                   <FilterListIcon />
                 </IconButton>
               </Tooltip>
 
-              <Drawer anchor="right">list</Drawer>
+              <Drawer anchor="right" open={drawerOpenProp} onClose={toggleDrawer(false)}>
+                <Stack
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                  onSubmit={onFilterSubmit}
+                  spacing={2}
+                  sx={{ p: 2 }}
+                >
+                  <Typography variant="h6" component="div">
+                    Filter
+                  </Typography>
+
+                  <TextField
+                    fullWidth
+                    label="Term or definition"
+                    {...register("searchQuery", {
+                      setValueAs: (value: string) => value.trim(),
+                    })}
+                  />
+
+                  <FormControl fullWidth>
+                    <InputLabel id="filter-level">Level</InputLabel>
+                    <Controller
+                      name="level"
+                      control={control}
+                      render={({ field }) => (
+                        <Select labelId="filter-level" label="Level" {...field}>
+                          <MenuItem value={-1}>any</MenuItem>
+                          {availableTermLevels.map(i => (
+                            <MenuItem key={i} value={i}>
+                              {i}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+                  </FormControl>
+
+                  <Button type="submit" fullWidth variant="contained">
+                    Search
+                  </Button>
+                  <Button type="button" fullWidth variant="outlined" onClick={onResetForm}>
+                    Reset
+                  </Button>
+                </Stack>
+              </Drawer>
 
               <TablePagination
                 rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}

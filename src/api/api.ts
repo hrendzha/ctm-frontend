@@ -3,9 +3,11 @@ import { ICredentials, IJsonResponse, IImageItem, ISignUpFormData, ITerm, IUser 
 import { NewTerm, TermForUpdate } from "types";
 import { LsKeys } from "constants-local";
 import { ChangeLevelActions } from "enums";
+import { ICardsListFilterAPI } from "interfaces/CardsListFilter.interface";
+import { getURLSearchParams } from "utils/getURLSearchParams";
 
 // const DEV_CONNECTION = "http://localhost:4000/api/";
-const DEV_CONNECTION = "http://192.168.0.171:4000/api";
+const DEV_CONNECTION = "http://localhost:4000/api";
 const PROD_CONNECTION = "https://ctm-api.online/api/";
 
 axios.defaults.baseURL = process.env.NODE_ENV === "development" ? DEV_CONNECTION : PROD_CONNECTION;
@@ -74,15 +76,18 @@ const api = {
   },
 
   terms: {
-    get: async () => {
+    get: async (body: ICardsListFilterAPI) => {
       try {
         interface IData {
           items: ITerm[];
+          totalItems: number;
         }
-        const { data }: { data: IJsonResponse<IData> } = await axios.get("/terms");
-        const terms = data.data.items;
 
-        return terms;
+        const queryString = new URLSearchParams(getURLSearchParams(body)).toString();
+
+        const { data }: { data: IJsonResponse<IData> } = await axios.get(`/terms?${queryString}`);
+
+        return data.data;
       } catch (error) {
         throw error;
       }
