@@ -1,5 +1,5 @@
 import { ITerm } from "interfaces";
 
-type TermForUpdate = Partial<Pick<ITerm, "term" | "definition" | "imageUrl">>;
+type TermForUpdate = Partial<Pick<ITerm, "term" | "definition" | "level" | "imageUrl">>;
 
 export type { TermForUpdate };
