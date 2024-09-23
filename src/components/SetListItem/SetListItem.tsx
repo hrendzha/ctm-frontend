@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Card,
@@ -13,6 +13,10 @@ import {
   Box,
   TextField,
   styled,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -26,6 +30,7 @@ import { NewTerm } from "types";
 import { newTermSchema } from "yup/schemas";
 import { SetListItemImagesBlock } from "components/SetListItemImagesBlock";
 import { ZoomableImage } from "components/ZoomableImage";
+import { availableTermLevels } from "constants-local";
 
 const RemoveImgBtn = styled(IconButton)(() => ({
   position: "absolute",
@@ -52,10 +57,12 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
     getValues,
     setValue,
     formState: { errors },
+    control,
   } = useForm<NewTerm>({
     defaultValues: {
       term: term.term,
       definition: term.definition,
+      level: term.level,
     },
     mode: "onChange",
     resolver: yupResolver(newTermSchema),
@@ -90,7 +97,8 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
 
       if (
         formValues.term.trim() !== term.term ||
-        formValues.definition.trim() !== term.definition
+        formValues.definition.trim() !== term.definition ||
+        formValues.level !== term.level
       ) {
         try {
           setEditingInProgress(true);
@@ -149,9 +157,28 @@ const SetListItem = ({ term, onRemoveCallback, onEditCallback }: IProps) => {
     <ListItem disableGutters>
       <Card sx={{ width: "100%" }}>
         <CardActions sx={{ justifyContent: "space-between" }}>
-          <Typography component="span">
-            Level <b>{term.level}</b>
-          </Typography>
+          {isEditing ? (
+            <FormControl sx={{ minWidth: "70px" }} size="small">
+              <InputLabel id="filter-level">Level</InputLabel>
+              <Controller
+                name="level"
+                control={control}
+                render={({ field }) => (
+                  <Select labelId="filter-level" label="Level" {...field}>
+                    {availableTermLevels.map(i => (
+                      <MenuItem key={i} value={i}>
+                        {i}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          ) : (
+            <Typography component="span">
+              Level <b>{term.level}</b>
+            </Typography>
+          )}
 
           <Box>
             <Tooltip title="Add image">
