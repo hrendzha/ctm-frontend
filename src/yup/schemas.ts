@@ -72,6 +72,7 @@ const newTermSchema = yup
         `Definition can be max ${TERM_FIELDS_LENGTH.Definition.Max} character-(s)`
       )
       .required("Definition is a required field"),
+    level: yup.number(),
   })
   .required();
 
