@@ -38,6 +38,7 @@ const ITEMS_PER_PAGE_OPTIONS = [5, 10, 25, 50, 100];
 const formDefaultValues = {
   searchQuery: "",
   level: -1,
+  sort: "createDesc",
 };
 
 const SetPage = () => {
@@ -63,6 +64,14 @@ const SetPage = () => {
     }
   });
 
+  const onSortChange = () => {
+    if (page === 0) {
+      getTerms();
+    } else {
+      setPage(0);
+    }
+  };
+
   const onResetForm = () => reset();
 
   const onPageChange = async (
@@ -84,6 +93,7 @@ const SetPage = () => {
       const data = await api.terms.get({
         page: page,
         perPage: itemsPerPage,
+        sort: formData.sort,
         searchQuery: formData.searchQuery,
         level: formData.level === -1 ? undefined : formData.level,
       });
@@ -169,12 +179,45 @@ const SetPage = () => {
           </List>
         ) : (
           <>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Tooltip title="Filter">
-                <IconButton aria-label="filter" onClick={toggleDrawer(true)}>
-                  <FilterListIcon />
-                </IconButton>
-              </Tooltip>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              flexWrap={"wrap"}
+            >
+              <Box display="flex" alignItems="center" gap={2} flexWrap={"wrap"}>
+                <Tooltip title="Filter">
+                  <IconButton aria-label="filter" onClick={toggleDrawer(true)}>
+                    <FilterListIcon />
+                  </IconButton>
+                </Tooltip>
+
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <InputLabel id="sort">Sort by</InputLabel>
+                  <Controller
+                    name="sort"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        labelId="sort"
+                        label="Sort by"
+                        {...field}
+                        onChange={e => {
+                          field.onChange(e);
+                          onSortChange();
+                        }}
+                      >
+                        <MenuItem value="createAsc">Create Date: Ascending</MenuItem>
+                        <MenuItem value="createDesc" selected>
+                          Create Date: Descending
+                        </MenuItem>
+                        <MenuItem value="lvlChangeAsc">Level Change Date: Ascending</MenuItem>
+                        <MenuItem value="lvlChangeDesc">Level Change Date: Descending</MenuItem>
+                      </Select>
+                    )}
+                  />
+                </FormControl>
+              </Box>
 
               <Drawer anchor="right" open={drawerOpenProp} onClose={toggleDrawer(false)}>
                 <Stack
