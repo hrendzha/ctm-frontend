@@ -111,6 +111,7 @@ const AddTermDialog = ({ open, onClose, onSave, termForUpdate }: IDialogProps) =
       onClose={onClose}
       maxWidth="xs"
       fullWidth
+      disableEscapeKeyDown={true}
     >
       <Box component="form" noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
         <BootstrapDialogTitle id="add-new-term-dialog" onClose={onClose}>

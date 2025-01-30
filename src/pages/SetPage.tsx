@@ -1,22 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Drawer,
-  FormControl,
-  IconButton,
-  InputLabel,
-  List,
-  ListItem,
-  MenuItem,
-  Select,
-  Skeleton,
-  Stack,
-  TablePagination,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Drawer, FormControl, IconButton, InputLabel, List, ListItem, MenuItem, Select, Skeleton, Stack, TablePagination, TextField, Tooltip, Typography } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { api } from "api";
 import { ITerm } from "interfaces";
@@ -74,10 +57,7 @@ const SetPage = () => {
 
   const onResetForm = () => reset();
 
-  const onPageChange = async (
-    _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number
-  ) => {
+  const onPageChange = async (_: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) => {
     setPage(newPage);
   };
 
@@ -126,7 +106,14 @@ const SetPage = () => {
   };
 
   const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
+  const handleCloseDialog = (e?: object, reason?: "backdropClick" | "escapeKeyDown") => {
+    // prevent closing dialog on backdrop click
+    if (reason === "backdropClick") {
+      return;
+    }
+
+    setOpenDialog(false);
+  };
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setDrawerOpenProp(newOpen);
@@ -179,12 +166,7 @@ const SetPage = () => {
           </List>
         ) : (
           <>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              flexWrap={"wrap"}
-            >
+            <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap={"wrap"}>
               <Box display="flex" alignItems="center" gap={2} flexWrap={"wrap"}>
                 <Tooltip title="Filter">
                   <IconButton aria-label="filter" onClick={toggleDrawer(true)}>
@@ -220,14 +202,7 @@ const SetPage = () => {
               </Box>
 
               <Drawer anchor="right" open={drawerOpenProp} onClose={toggleDrawer(false)}>
-                <Stack
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                  onSubmit={onFilterSubmit}
-                  spacing={2}
-                  sx={{ p: 2 }}
-                >
+                <Stack component="form" noValidate autoComplete="off" onSubmit={onFilterSubmit} spacing={2} sx={{ p: 2 }}>
                   <Typography variant="h6" component="div">
                     Filter
                   </Typography>
@@ -267,22 +242,10 @@ const SetPage = () => {
                 </Stack>
               </Drawer>
 
-              <TablePagination
-                rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
-                component="div"
-                count={totalItems}
-                rowsPerPage={itemsPerPage}
-                page={page}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onChangeRowsPerPage}
-              />
+              <TablePagination rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS} component="div" count={totalItems} rowsPerPage={itemsPerPage} page={page} onPageChange={onPageChange} onRowsPerPageChange={onChangeRowsPerPage} />
             </Box>
 
-            <SetList
-              terms={terms}
-              onRemoveCallback={onRemoveCallback}
-              onEditCallback={onEditCallback}
-            />
+            <SetList terms={terms} onRemoveCallback={onRemoveCallback} onEditCallback={onEditCallback} />
           </>
         )}
       </AppContainer>
